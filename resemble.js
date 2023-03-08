@@ -42,11 +42,6 @@ var getGlobalThis = function () {
     }
 };
 
-var isNode = function () {
-    const globalPolyfill = getGlobalThis();
-    return typeof globalPolyfill.process !== "undefined" && globalPolyfill.process.versions && globalPolyfill.process.versions.node;
-};
-
 (function (root, factory) {
     "use strict";
     if (typeof define === "function" && define.amd) {
@@ -63,19 +58,9 @@ var isNode = function () {
     var Canvas;
     var loadNodeCanvasImage;
 
-    if (isNode()) {
-        Canvas = require("canvas"); // eslint-disable-line global-require
-        Img = Canvas.Image;
-        loadNodeCanvasImage = Canvas.loadImage;
-    } else {
-        Img = Image;
-    }
+    Img = Image;
 
     function createCanvas(width, height) {
-        if (isNode()) {
-            return Canvas.createCanvas(width, height);
-        }
-
         var cnvs = document.createElement("canvas");
         cnvs.width = width;
         cnvs.height = height;
@@ -332,7 +317,7 @@ var isNode = function () {
 
             if (typeof fileDataForImage === "string") {
                 hiddenImage.src = fileDataForImage;
-                if (!isNode() && hiddenImage.complete && hiddenImage.naturalWidth > 0) {
+                if (hiddenImage.complete && hiddenImage.naturalWidth > 0) {
                     hiddenImage.onload();
                 }
             } else if (
